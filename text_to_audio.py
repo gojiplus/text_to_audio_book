@@ -51,7 +51,7 @@ def synthesize_text_file(text, gender, output):
 
 def main(args):
     # read input text file
-    with open(args.textfile, 'r') as f:
+    with open(args.textfile, 'r', encoding='utf-8') as f:
         text = f.read()
         if args.length != 0:
             text = text[:args.length]
@@ -66,7 +66,8 @@ def main(args):
         opath = os.path.join('.tmp', ofn)
         if os.path.exists(opath):
             print("Existing... skipped")
-        synthesize_text_file(line, args.gender, opath)
+        else:
+            synthesize_text_file(line, args.gender, opath)
 
     # join audio files
     silence = AudioSegment.silent(duration=200)
@@ -79,13 +80,14 @@ def main(args):
             playlist += silence
             playlist += AudioSegment.from_mp3(fn)
         os.unlink(fn)
-        playlist_length = len(playlist) / (1000)
+        playlist_length = int(len(playlist) / 1000)
         print('Current audio length: {:d} seconds'.format(playlist_length))
-    os.removedirs('.tmp')
 
     # save the audio output file
     print('Saving the output file: {:s}'.format(args.output))
     playlist.export(args.output, format='mp3')
+
+    os.removedirs('.tmp')
     print("Complete!!!")
 
 
